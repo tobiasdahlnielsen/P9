@@ -1,7 +1,11 @@
-library(readr)
+## Load packages
+source("Lib.R")
+
+## Load data
 spot_data <- as.data.frame(read_csv("spot_data.csv"))
 spot_data <- spot_data %>% mutate(StartUTC = as.POSIXct(StartUTC, tz = "UTC", format = "%Y-%m-%d %H:%M"))
 
+## remove seasonality
 data <- spot_data[,1]
 
 periode <- 365*24
@@ -21,9 +25,9 @@ for (i in 1:4) {
                  sin((104*pi/periode)*I(time(spot_data[,1])))
   )
 data <- cbind(data,model$residuals) 
+
 }
 data <- as.data.frame(data);names(data) <- c(names(spot_data))
-
 
 
 # par(mfrow=c(2,1))
