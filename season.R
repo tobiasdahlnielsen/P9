@@ -10,9 +10,10 @@ data <- spot_data[,1]
 
 periode <- 365*24
 for (i in 1:4) {
-  model <- glm(spot_data[,i+1]~
+  model <- glm(spot_data[,i+1]~-1+
                  time(spot_data[,1])+
-                 # I(time(spot_data[,1])^2)+
+                  I(time(spot_data[,1])^2)+
+                 #I(time(spot_data[,1])^3)+
                  cos((2*pi/periode)*I(time(spot_data[,1])))+
                  sin((2*pi/periode)*I(time(spot_data[,1])))+
                  cos(((2*2)*pi/periode)*I(time(spot_data[,1])))+
@@ -26,13 +27,13 @@ for (i in 1:4) {
                  cos(((365*2)*pi/periode)*I(time(spot_data[,1])))+
                  sin(((365*2)*pi/periode)*I(time(spot_data[,1])))
   )
- print( summary(model))
+# print( summary(model))
 data <- cbind(data,model$residuals) 
 
 }
 data <- as.data.frame(data);names(data) <- c(names(spot_data))
 
-Acf(auto.arima(data$DE,d=0)$residuals)
+Acf(auto.arima(data$DE)$residuals)
 
 # par(mfrow=c(2,1))
 # plot(spot_data[,3],type = "l")
