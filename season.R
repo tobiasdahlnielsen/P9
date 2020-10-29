@@ -15,20 +15,24 @@ for (i in 1:4) {
                  # I(time(spot_data[,1])^2)+
                  cos((2*pi/periode)*I(time(spot_data[,1])))+
                  sin((2*pi/periode)*I(time(spot_data[,1])))+
-                 cos((4*pi/periode)*I(time(spot_data[,1])))+
-                 sin((4*pi/periode)*I(time(spot_data[,1])))+
-                 cos((8*pi/periode)*I(time(spot_data[,1])))+
-                 sin((8*pi/periode)*I(time(spot_data[,1])))+
-                 cos((24*pi/periode)*I(time(spot_data[,1])))+
-                 sin((24*pi/periode)*I(time(spot_data[,1])))+
-                 cos((104*pi/periode)*I(time(spot_data[,1])))+
-                 sin((104*pi/periode)*I(time(spot_data[,1])))
+                 cos(((2*2)*pi/periode)*I(time(spot_data[,1])))+
+                 sin(((2*2)*pi/periode)*I(time(spot_data[,1])))+
+                 cos(((4*2)*pi/periode)*I(time(spot_data[,1])))+
+                 sin(((4*2)*pi/periode)*I(time(spot_data[,1])))+
+                 cos(((12*2)*pi/periode)*I(time(spot_data[,1])))+
+                 sin(((12*2)*pi/periode)*I(time(spot_data[,1])))+
+                 cos(((52*2)*pi/periode)*I(time(spot_data[,1])))+
+                 sin(((52*2)*pi/periode)*I(time(spot_data[,1])))+
+                 cos(((365*2)*pi/periode)*I(time(spot_data[,1])))+
+                 sin(((365*2)*pi/periode)*I(time(spot_data[,1])))
   )
+ print( summary(model))
 data <- cbind(data,model$residuals) 
 
 }
 data <- as.data.frame(data);names(data) <- c(names(spot_data))
 
+Acf(auto.arima(data$DE,d=0)$residuals)
 
 # par(mfrow=c(2,1))
 # plot(spot_data[,3],type = "l")
