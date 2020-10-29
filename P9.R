@@ -3,14 +3,14 @@ source("Lib.R")
 
 
 ## Data selecting
-data <- read.csv("C:/Users/sphj/Desktop/Matematik-Økonomi Studiet/Kandidaten/9. semester/P.9/spot_data.csv")
-data <- data %>% mutate(StartUTC = as.POSIXct(StartUTC, tz = "UTC", format = "%Y-%m-%d %H:%M"))
+
 spotspread <- data %>% transmute(Spread = DE-FR, SpreadForecast = DEForecast - FRForecast)
+spotspread2 <- data %>% transmute(Spread = FR-DE, SpreadForecast = FRForecast - DEForecast) 
+spotspredpseudo <- spotspread %>% pobs()
+spotspredpseudo2 <- spotspread2 %>% pobs()
 
-
-## Cleaning data (subsetting if needed)
-
-
+pseudoobsDE <- data %>% select(DE,DEForecast) %>% pobs()
+pseudoobsFR <- data %>% select(FR,FRForecast) %>% pobs()
 
 ## Visualization of data
 data %>% 
@@ -19,12 +19,26 @@ data %>%
 data %>% 
   ggplot(aes(x = StartUTC, y = FR, type = "scatter", color = "Obs")) + geom_line() + geom_line(aes(y = FRForecast, color = "Forcast"))
 
-spotspread %>% 
+spotspread2 %>% 
   ggplot(aes(x = Spread, y = SpreadForecast, type = "scatter")) + geom_point() + xlim(-75,75) + ylim(-75,75)
 
 
 
+
+## Non parametric estimation of Dependence measures
+
+DEKendall <- data %>% select(DE,DEForecast) %>% cor(method = "kendall")
+DESpearman <- data %>% select(DE,DEForecast) %>% cor(method = "spearman")
+FRKendall <- data %>% select(FR,FRForecast) %>% cor(method = "kendall")
+FRSpearman <- data %>% select(FR,FRForecast) %>% cor(method = "spearman")
+
+
+lambda <- c(lower = fitLambda(pseudoobsDE)[2,1],
+            upper = fitLambda(pseudoobsFR,lower.tail = FALSE)[2,1])
+
+
 ## Marginal distributions 
+
 
 
 par(mfrow=c(1,2))
@@ -32,31 +46,28 @@ hist(data$DE)
 hist(data$DEForecast)
 
 
-
 par(mfrow=c(1,2))
 hist(data$FR)
 hist(data$FRForecast)
 
-## Dependence measures
-
-data %>% transmute(DE=DE, DEForecast=DEForecast) %>% cor(method = "kendall")
-data %>% transmute(DE=DE, DEForecast=DEForecast) %>% cor(method = "spearman")
-data %>% transmute(FR=FR, FRForecast=FRForecast) %>% cor(method = "kendall")
-data %>% transmute(FR=FR, FRForecast=FRForecast) %>% cor(method = "spearman")
 
 
 
 ## Copula fitting
 
+# select family of copula
 
 DE_Copula_fit <- BiCopSelect(pobs(data$DE),pobs(data$DEForecast),familyset = NA)
-
-
 FR_Copula_fit <- BiCopSelect(pobs(data$FR),pobs(data$FRForecast),familyset = NA)
 
+# fitting with empirical margins
+
+CopfitmplDE <- fitCopula(tCopula(), pseudoobsDE, method="mpl")
+CopfitmlDE <- fitCopula(tCopula(), pseudoobsDE, method="ml")
+
+CopfitmplFR <- fitCopula(tCopula(), pseudoobsFR, method="mpl")
+CopfitmlFR <- fitCopula(tCopula(), pseudoobsFR, method="ml")
 
 
-my_dist <- mvdc(tCopula(param = c(0.97,4.32), dim = 2), margins = c("gamma","gamma"), paramMargins = list(list(shape = x_shape, rate = x_rate), list(shape = y_shape, rate = y_rate)))
-
-## Tail corr
+## parametric estimation of tail dependence
 
