@@ -1,0 +1,6 @@
+library(tidyverse)
+library(forecast)
+library(copula)
+library(scatterplot3d)
+library(grid)
+library(VineCopula)

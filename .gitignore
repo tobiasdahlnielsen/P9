@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 spot_data.csv
+=======
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+spot_data.csv
+lib.R
+>>>>>>> 82d2771a233eb148c0014eab5a114dde3e4dc337
