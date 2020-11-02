@@ -1,4 +1,4 @@
-
+source("lib.R")
 library(readr)
 spot_data <- read_csv("spot_data.csv")
 
@@ -8,6 +8,8 @@ for (i in 1:4) {
   model <- lm(spot_data[,i+1]~
                 time(spot_data[,1])+
                 I(time(spot_data[,1])^2)+
+                I(time(spot_data[,1])^3)+
+                I(time(spot_data[,1])^4)+
                 cos((2*pi/periode)*I(time(spot_data[,1])))+
                 sin((2*pi/periode)*I(time(spot_data[,1])))+
                 cos((4*pi/periode)*I(time(spot_data[,1])))+
@@ -24,6 +26,8 @@ for (i in 1:4) {
 model <- lm(spot_data[,2]~
               time(spot_data[,1])+
               I(time(spot_data[,1])^2)+
+              I(time(spot_data[,1])^3)+
+              I(time(spot_data[,1])^4)+
               cos((2*pi/periode)*I(time(spot_data[,1])))+
               sin((2*pi/periode)*I(time(spot_data[,1])))+
               cos((4*pi/periode)*I(time(spot_data[,1])))+
@@ -34,7 +38,7 @@ model <- lm(spot_data[,2]~
               sin((16*pi/periode)*I(time(spot_data[,1])))+
               cos((32*pi/periode)*I(time(spot_data[,1])))+
               sin((32*pi/periode)*I(time(spot_data[,1]))))
-tid <- 15000:20000
+
 par(mfrow=c(1,1))
 plot(spot_data$StartUTC[tid],spot_data$DE[tid],type="l")
 plot(spot_data$StartUTC[tid],model$residuals[tid],type="l")
