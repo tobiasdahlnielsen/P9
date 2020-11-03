@@ -10,7 +10,7 @@ data <- spot_data[,1]
 
 periode <- 365*24
 for (i in 1:4) {
-  model <- glm(spot_data[,i+1]~-1+
+  model <- glm(spot_data[,i+1]~
                  time(spot_data[,1])+
                   I(time(spot_data[,1])^2)+
                  #I(time(spot_data[,1])^3)+
@@ -33,7 +33,9 @@ data <- cbind(data,model$residuals)
 }
 data <- as.data.frame(data);names(data) <- c(names(spot_data))
 
-Acf(auto.arima(data$DE)$residuals)
+pre <- auto.arima(data$DE,d=0)
+
+sarima(data$DE,p=3,d=0,q=2,P=1,S=24)
 
 # par(mfrow=c(2,1))
 # plot(spot_data[,3],type = "l")
