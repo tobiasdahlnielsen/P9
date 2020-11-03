@@ -7,7 +7,7 @@ spot_data <- spot_data %>% mutate(StartUTC = as.POSIXct(StartUTC, tz = "UTC", fo
 
 ## remove seasonality
 {data <- spot_data[,1]
-
+datafit <- spot_data[,1]
 periode <- 365*24
 for (i in 1:4) {
   model <- glm(spot_data[,i+1]~
@@ -33,15 +33,18 @@ for (i in 1:4) {
                  sin(((365*2)*pi/periode)*I(time(spot_data[,1])))
   )
  #print( summary(model))
-data <- cbind(data,model$residuals) 
+ 
 #plot(model$residuals,type="l")
 ARMAtest <- auto.arima(model$residuals)
-seaarma <- arima(ARMAtest$residuals,seasonal = list(order=c(1,0,0),period=24))
+#sarma <- arima(ARMAtest$residuals,seasonal = list(order=c(1,0,0),period=24))
 #print(ARMAtest)
-acf(seaarma$residuals)
+#acf(sarma$residuals)
 #Acf(ARMAtest$residuals)
+data <- cbind(data,ARMAtest$residuals)
+datafit <- cbind(datafit,ARMAtest$fitted)
 }
-data <- as.data.frame(data);names(data) <- c(names(spot_data))
+data <- as.data.frame(data);names(data) <- c(names(spot_data))[1:(i+1)]
+datafit <- as.data.frame(datafit);names(datafit) <- c(names(spot_data))[1:(i+1)]
 
 #auto.arima(model$residuals)
 }
