@@ -1,5 +1,5 @@
 source("Lib.R")
-
+source("season.R")
 ##################
 #¤ Simuler Data ¤# 
 ##################
@@ -24,7 +24,7 @@ U = Data %>% mutate(U = F_X(X), V = F_Y(Y)) %>% select(U,V)
 U %>% ggplot(aes(x = U, y = V)) + geom_point()
 fitted = fitCopula(tCopula(),U, method="itau",start=NULL)
 
-x_seq = seq(from = -5, to = 5, length.out = 1000)
+x_seq = seq(from = -20, to = 20, length.out = 10000)
 
 C_hat = function(w){
   pCopula(w, fitted@copula)
@@ -47,19 +47,19 @@ y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 plot(x_seq, `P(X<=x|Y=y)`, type = "l", col = "green", xlab = "x")
 
-y = 1
+y = 10
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "blue")
 
-y = 2
+y = -10
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "purple")
 
-y = 3
+y = -20
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "red")
 
-y = 4
+y = 20
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "yellow")
 
