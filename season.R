@@ -48,6 +48,10 @@ datafit <- as.data.frame(datafit);names(datafit) <- c(names(spot_data))[1:(i+1)]
 
 #auto.arima(model$residuals)
 }
+
+
+
+
 ## Remove seasonality diffed data
 
 datadif <- as.data.frame(cbind(diff(data$DE),diff(data$FR),diff(data$DEForecast),diff(data$FRForecast)))
