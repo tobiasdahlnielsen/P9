@@ -76,9 +76,14 @@ CopfitmlDE <- fitCopula(tCopula(), pseudoobsDE, method="ml")
 CopfitmplDE_ARMA <- fitCopula(tCopula(), pseudoobsDEfit, method="mpl")
 CopfitmlDE_ARMA <- fitCopula(tCopula(), pseudoobsDEfit, method="ml")
 
-hist(cCopula(pseudoobsDEfit,CopfitmplDE_ARMA@copula)[,2])
+plot(ecdf(qnorm(cCopula(pseudoobsDE,CopfitmplDE@copula)[,2])),col="red")
+curve(pnorm(x),add=TRUE)
+
+mean(qnorm(cCopula(pseudoobsDE,CopfitmplDE@copula)[,1]))
+hist(quantile(data$DE,probs=seq(0.01,0.99,length.out = 10000)),breaks = 100)
 
 hist(qnorm(as.numeric(cCopula(pseudoobsDEfit,CopfitmplDE_ARMA@copula)[,1]),mean = mean(datafit[,2]),sd=sd(datafit[,2])),breaks=100)
+
 
 CopfitmplFR <- fitCopula(tCopula(), pseudoobsFR, method="mpl")
 CopfitmlFR <- fitCopula(tCopula(), pseudoobsFR, method="ml")

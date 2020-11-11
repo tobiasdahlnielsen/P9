@@ -4,4 +4,6 @@
 .Ruserdata
 spot_data.csv
 lib.R
-
+data.html
+data.Rmd
+data_files

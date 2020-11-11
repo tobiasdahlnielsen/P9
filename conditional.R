@@ -47,6 +47,16 @@ y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 plot(x_seq, `P(X<=x|Y=y)`, type = "l", col = "green", xlab = "x")
 
+dxdv = function(v){
+  nyv <- c()
+  for (i in 2:(length(v)-1)) {
+  nyv[i-1] <- (v[i+1]-v[i-1])/(2*diff(x_seq)[1])
+  }
+  return(nyv)
+}
+plot(dxdv(`P(X<=x|Y=y)`),type="l")
+
+
 y = 10
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "blue")
@@ -67,3 +77,35 @@ lines(x_seq, `P(X<=x|Y=y)`, col = "yellow")
 legend("bottomright", legend=c("y=0", "y=1","y=2","y=3","y_4"),
        col=c("green","blue", "purple","red","yellow"), lty=1, cex=0.8)
 
+
+
+`d/dx` = function(f, eps = 1e-6){
+  return(function(x){(f(x + eps) - f(x-eps))/(2*eps)})
+}
+
+x_prime = seq(from = -6,to = 6, length.out = 75)
+
+F_X = approxfun(x_prime, F_X(x_prime),rule = 2)
+F_Y = approxfun(x_prime, F_Y(x_prime),rule = 2)
+
+f_X = `d/dx`(F_X)
+f_Y = `d/dx`(F_Y)
+
+
+{plot(seq(from = -6,to = 6, length.out = 100),f_X(seq(from = -6,to = 6, length.out = 100)),type = "l", xlab = "x", ylab = "")
+  lines(seq(from = -6,to = 6, length.out = 100),f_Y(seq(from = -6,to = 6, length.out = 100)),col = "red")
+  legend("topright", legend=c("f_X", "f_Y"),
+         col=c("black","red"), lty=1, cex=0.8)}
+
+
+
+`f_X|Y` = function(x,y,cop,F_X,F_Y,f_X){cop(c(F_X(x),F_Y(y)))*f_X(x)}
+
+x = seq(from = -6, to = 6, length.out = 1000)
+
+plot(x,sapply(x, `f_X|Y`, y = 0, cop = c_hat, F_X = F_X, F_Y =F_Y, f_X = f_X), type = "l",col = "green", ylab = "f_{X|Y=y}(x)", ylim = c(0,1.3))
+lines(x_prime,sapply(x_prime, `f_X|Y`, y = 1, cop = C_hat, F_X = F_X, F_Y =F_Y, f_X = f_X), col = "blue")
+lines(x_prime,sapply(x_prime, `f_X|Y`, y = 2, cop = c_hat, F_X = F_X, F_Y =F_Y, f_X = f_X), col = "purple")
+lines(x_prime,sapply(x_prime, `f_X|Y`, y = 3, cop = c_hat, F_X = F_X, F_Y =F_Y, f_X = f_X), col = "red")
+legend("topleft", legend=c("y=0", "y=1","y=2","y=3"),
+       col=c("green","blue", "purple","red"), lty=1, cex=0.8)
