@@ -24,7 +24,8 @@ U = Data %>% mutate(U = F_X(X), V = F_Y(Y)) %>% select(U,V)
 U %>% ggplot(aes(x = U, y = V)) + geom_point()
 fitted = fitCopula(tCopula(),U, method="itau",start=NULL)
 
-x_seq = seq(from = -20, to = 20, length.out = 10000)
+
+x_seq = seq(from = -20, to = 20, length.out = 1000)
 
 C_hat = function(w){
   pCopula(w, fitted@copula)
@@ -42,6 +43,15 @@ C_hat = function(w){
   
   sapply(X = F_X(x), dCdV)
 }
+y=c(-20,-15,-10,-5,0,5,10,15,20)*3
+y=seq(from = -20, to = 20, length.out = 1000)
+cdfm <- c()
+for (i in 1:length(y)) {
+  cdfm = cbind(cdfm,`F_X|Y`(x_seq,y[i],F_X,F_Y,C_hat))
+}
+
+
+persp3D(x=y,y=c(1:1000),z=t(cdfm))
 
 y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
@@ -74,8 +84,10 @@ y = 20
 lines(x_seq, `P(X<=x|Y=y)`, col = "yellow")
 
 
-legend("bottomright", legend=c("y=0", "y=1","y=2","y=3","y_4"),
+legend("bottomright", legend=c("y=0", "y=1","y=2","y=3","y=4"),
        col=c("green","blue", "purple","red","yellow"), lty=1, cex=0.8)
+
+
 
 
 
