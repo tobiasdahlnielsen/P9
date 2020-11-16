@@ -45,12 +45,12 @@ lambda <- c(lower = fitLambda(pseudoobsDE)[2,1],
 
 
 par(mfrow=c(1,2))
-hist(data$DE)
+hist(data$DE,breaks=1000)
 hist(data$DEForecast)
 
 
 par(mfrow=c(1,2))
-hist(data$FR)
+hist(data$FR,breaks=1000)
 hist(data$FRForecast)
 
 

@@ -47,15 +47,15 @@ y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 plot(x_seq, `P(X<=x|Y=y)`, type = "l", col = "green", xlab = "x")
 
-dxdv = function(v){
-  nyv <- c()
-  for (i in 2:(length(v)-1)) {
-  nyv[i-1] <- (v[i+1]-v[i-1])/(2*diff(x_seq)[1])
-  }
-  return(nyv)
-}
-plot(dxdv(`P(X<=x|Y=y)`),type="l")
-
+# dxdv = function(v){
+#   nyv <- c()
+#   for (i in 2:(length(v)-1)) {
+#   nyv[i-1] <- (v[i+1]-v[i-1])/(2*diff(x_seq)[1])
+#   }
+#   return(nyv)
+# }
+# plot(dxdv(`P(X<=x|Y=y)`),type="l")
+# 
 
 y = 10
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
