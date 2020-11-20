@@ -6,7 +6,7 @@ source("season.R")
 
 
 Data = tibble(X = data$DE, Y = data$DEForecast)
-Data %>% ggplot(aes(x = X, y = Y)) + geom_point()
+Data %>% ggplot(aes(x = X, y = Y)) + geom_point()+xlim(-80,80)+ylim(-80,80)
 
 
 ##################
@@ -20,10 +20,24 @@ F_Y = ecdf(Data$Y)
 #¤  Fit Copula  ¤# 
 ##################
 
+hist(Data$Y, prob=T, col="skyblue2",breaks=100,main="Density of spot actual",xlab="")
+lines(density(Data$Y), type="l", col="red", lwd=2)  # type is 'ell', not 'one'
+curve(dnorm(x, 0, sd(Data$Y)), add=T, lty="dotted")
+legend("topright", legend=c("edf","normal"),
+       col=c("red","black"), lty=c(1,2), cex=1)
+
+
+
+# plot(F_X)
+# curve(pnorm(x,mean=mean(Data$X),sd=sd(Data$X)),add=TRUE,col="red")
+# U = Data %>% mutate(U = pnorm(Data$X,mean=mean(Data$X),sd=sd(Data$X)), V = pnorm(Data$Y,mean=mean(Data$Y),sd=sd(Data$Y))) %>% select(U,V)
+
+
 U = Data %>% mutate(U = F_X(X), V = F_Y(Y)) %>% select(U,V)
 U %>% ggplot(aes(x = U, y = V)) + geom_point()
 fitted = fitCopula(tCopula(),U, method="itau",start=NULL)
 
+hist(cCopula(as.matrix(U),fitted@copula))
 
 x_seq = seq(from = -20, to = 20, length.out = 1000)
 
@@ -43,29 +57,19 @@ C_hat = function(w){
   
   sapply(X = F_X(x), dCdV)
 }
-y=c(-20,-15,-10,-5,0,5,10,15,20)*3
-y=seq(from = -20, to = 20, length.out = 1000)
-cdfm <- c()
-for (i in 1:length(y)) {
-  cdfm = cbind(cdfm,`F_X|Y`(x_seq,y[i],F_X,F_Y,C_hat))
-}
-
-
-persp3D(x=y,y=c(1:1000),z=t(cdfm))
+# y=c(-20,-15,-10,-5,0,5,10,15,20)*3
+# y=seq(from = -20, to = 20, length.out = 1000)
+# cdfm <- c()
+# for (i in 1:length(y)) {
+#   cdfm = cbind(cdfm,`F_X|Y`(x_seq,y[i],F_X,F_Y,C_hat))
+# }
+# 
+# 
+# persp3D(x=y,y=c(1:1000),z=t(cdfm))
 
 y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 plot(x_seq, `P(X<=x|Y=y)`, type = "l", col = "green", xlab = "x")
-
-# dxdv = function(v){
-#   nyv <- c()
-#   for (i in 2:(length(v)-1)) {
-#   nyv[i-1] <- (v[i+1]-v[i-1])/(2*diff(x_seq)[1])
-#   }
-#   return(nyv)
-# }
-# plot(dxdv(`P(X<=x|Y=y)`),type="l")
-# 
 
 y = 10
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
