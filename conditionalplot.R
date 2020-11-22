@@ -31,30 +31,30 @@ F_Y = ecdf(Data$Y)
 U = Data %>% mutate(U = F_X(X), V = F_Y(Y)) %>% select(U,V)
 fitted = fitCopula(tCopula(),U, method="itau",start=NULL)
 
-x_seq = seq(from = -20, to = 20, length.out = 1000)
+x_seq = seq(from = -100, to = 100, length.out = 1000)
 
 y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 plot(x_seq, `P(X<=x|Y=y)`, type = "l", col = "green", xlab = "x",main=navn[i])
 
-y = 10
+y = 25
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "blue")
 
-y = -10
+y = -25
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "purple")
 
-y = -20
+y = 50
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "red")
 
-y = 20
+y = -50
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)
 lines(x_seq, `P(X<=x|Y=y)`, col = "orange")
 
 
-legend("bottomright", legend=c("y=0", "y=10","y=-10","y=-20","y=20"),
+legend("bottomright", legend=c("y=0", "y=25","y=-25","y=50","y=-50"),
        col=c("green","blue", "purple","red","orange"), lty=1, cex=0.8)
   
 }
