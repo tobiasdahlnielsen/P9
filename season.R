@@ -49,7 +49,7 @@ spec <- ugarchspec(variance.model = list(model = "sGARCH",
                                          start.pars = list(),
                                          fixed.pars = list()))
 
-garch <- ugarchfit(spec = spec, data = model$residuals,solver = "gosolnp", solver.control = list(trace=0))
+garch <- ugarchfit(spec = spec, data = model$residuals,solver = "hybrid", solver.control = list(trace=0))
 #sarma <- arima(ARMAtest$residuals,seasonal = list(order=c(1,0,0),period=24))
 #print(summary(ARMAtest))
 #acf(sarma$residuals)
@@ -63,61 +63,63 @@ datafit <- as.data.frame(datafit);names(datafit) <- c(names(spot_data))[1:(i+1)]
 #auto.arima(model$residuals)
 }
 
-parm <- permutations(3,4,repeats.allowed = T)
-
-bp <- list()
-allic <- list()
-tictoc::tic()
-for (i in 1:4) {
-  model <- glm(spot_data[,i+1]~
-                 time(spot_data[,1])+
-                 I(time(spot_data[,1])^2)+
-                 I(time(spot_data[,1])^3)+
-                 I(time(spot_data[,1])^4)+
-                 I(time(spot_data[,1])^5)+
-                 #I(time(spot_data[,1])^6)+
-                 #I(time(spot_data[,1])^7)+
-                 #I(time(spot_data[,1])^8)+
-                 cos((2*pi/periode)*I(time(spot_data[,1])))+
-                 sin((2*pi/periode)*I(time(spot_data[,1])))+
-                 cos(((2*2)*pi/periode)*I(time(spot_data[,1])))+
-                 sin(((2*2)*pi/periode)*I(time(spot_data[,1])))+
-                 cos(((4*2)*pi/periode)*I(time(spot_data[,1])))+
-                 sin(((4*2)*pi/periode)*I(time(spot_data[,1])))+
-                 cos(((12*2)*pi/periode)*I(time(spot_data[,1])))+
-                 sin(((12*2)*pi/periode)*I(time(spot_data[,1])))+
-                 cos(((52*2)*pi/periode)*I(time(spot_data[,1])))+
-                 sin(((52*2)*pi/periode)*I(time(spot_data[,1])))+
-                 cos(((365*2)*pi/periode)*I(time(spot_data[,1])))+
-                 sin(((365*2)*pi/periode)*I(time(spot_data[,1])))
-  )
-    ic <- c()
-      for (j in 1:dim(parm)[1]) {
-      spec <- ugarchspec(variance.model = list(model = "sGARCH",
-                                         garchOrder = parm[j,3:4],
-                                         submodel = NULL,
-                                         external.regressors = NULL,
-                                         variance.targeting = FALSE),
-
-                   mean.model     = list(armaOrder = parm[j,1:2],
-                                         external.regressors = NULL,
-                                         distribution.model = "norm",
-                                         start.pars = list(),
-                                         fixed.pars = list()))
-
-      garch <- ugarchfit(spec = spec, data = model$residuals,solver = "hybrid", solver.control = list(tol = 1e-12,trace=0))
-        if (garch@fit$convergence==0) {
-          ic <- c(ic,infocriteria(garch)[1])
-        }
-      else{
-        ic <- c(ic,NA)
-      }
-    print(paste(i,j,garch@fit$convergence))
-      }
-  allic[[i]] <- ic
-  bp[[i]] <- parm[which(ic==min(ic,na.rm = T)),]
-}
-tictoc::toc()
+# parm <- permutations(5,4,repeats.allowed = T)
+# 
+# ekstra <-unique(c(which(parm[,3]==c(4)),which(parm[,3]==c(5)),which(parm[,4]==c(4)),which(parm[,4]==c(5))))
+# parm <- parm[-ekstra,]
+# bp <- list()
+# allic <- list()
+# tictoc::tic()
+# for (i in 1:4) {
+#   model <- glm(spot_data[,i+1]~
+#                  time(spot_data[,1])+
+#                  I(time(spot_data[,1])^2)+
+#                  I(time(spot_data[,1])^3)+
+#                  I(time(spot_data[,1])^4)+
+#                  I(time(spot_data[,1])^5)+
+#                  #I(time(spot_data[,1])^6)+
+#                  #I(time(spot_data[,1])^7)+
+#                  #I(time(spot_data[,1])^8)+
+#                  cos((2*pi/periode)*I(time(spot_data[,1])))+
+#                  sin((2*pi/periode)*I(time(spot_data[,1])))+
+#                  cos(((2*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  sin(((2*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  cos(((4*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  sin(((4*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  cos(((12*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  sin(((12*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  cos(((52*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  sin(((52*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  cos(((365*2)*pi/periode)*I(time(spot_data[,1])))+
+#                  sin(((365*2)*pi/periode)*I(time(spot_data[,1])))
+#   )
+#     ic <- c()
+#       for (j in 1:dim(parm)[1]) {
+#       spec <- ugarchspec(variance.model = list(model = "sGARCH",
+#                                          garchOrder = parm[j,3:4],
+#                                          submodel = NULL,
+#                                          external.regressors = NULL,
+#                                          variance.targeting = FALSE),
+# 
+#                    mean.model     = list(armaOrder = parm[j,1:2],
+#                                          external.regressors = NULL,
+#                                          distribution.model = "norm",
+#                                          start.pars = list(),
+#                                          fixed.pars = list()))
+# 
+#       garch <- ugarchfit(spec = spec, data = model$residuals,solver = "hybrid", solver.control = list(tol = 1e-12,trace=0))
+#         if (garch@fit$convergence==0) {
+#           ic <- c(ic,infocriteria(garch)[1])
+#         }
+#       else{
+#         ic <- c(ic,NA)
+#       }
+#     print(paste(i,j,garch@fit$convergence))
+#       }
+#   allic[[i]] <- ic
+#   bp[[i]] <- parm[which(ic==min(ic,na.rm = T)),]
+# }
+# tictoc::toc()
 
 
 # periode <- 365*24
