@@ -1,7 +1,7 @@
 ## Load packages
 source("Lib.R")
-load("~/P9/armagarchparm.RData")
-
+#load("~/P9/armagarchparm.RData")
+load("~/P9/5arga.RData")
 ## Load data
 spot_data <- as.data.frame(read_csv("spot_data.csv"))
 spot_data <- spot_data %>% mutate(StartUTC = as.POSIXct(StartUTC, tz = "UTC", format = "%Y-%m-%d %H:%M"))
