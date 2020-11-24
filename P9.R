@@ -1,6 +1,6 @@
 ## Load packages
 source("Lib.R")
-
+source("season.R")
 
 ## Data selecting
 
@@ -30,15 +30,29 @@ spotspread2 %>%
 
 ## Non parametric estimation of Dependence measures
 
+
 DEKendall <- data %>% select(DE,DEForecast) %>% cor(method = "kendall")
 DESpearman <- data %>% select(DE,DEForecast) %>% cor(method = "spearman")
 FRKendall <- data %>% select(FR,FRForecast) %>% cor(method = "kendall")
 FRSpearman <- data %>% select(FR,FRForecast) %>% cor(method = "spearman")
 
-
 lambda <- c(lower = fitLambda(pseudoobsDE)[2,1],
             upper = fitLambda(pseudoobsFR,lower.tail = FALSE)[2,1])
 
+
+
+F_X = ecdf(data$DE)
+F_Y = ecdf(data$FR)
+
+lambdaDE <- c(lower = fitLambda(cbind(F_X(data$DE),F_XF(data$DEForecast)))[2,1],
+            upper = fitLambda(cbind(F_X(data$DE),F_XF(data$DEForecast)),lower.tail = FALSE)[2,1])
+
+
+F_XF = ecdf(data$DEForecast)
+F_YF = ecdf(data$FRForecast)
+
+lambdaFR <- c(lower = fitLambda(cbind(F_Y(data$FR),F_YF(data$FRForecast)))[2,1],
+             upper = fitLambda(cbind(F_Y(data$FR),F_YF(data$FRForecast)),lower.tail = FALSE)[2,1])
 
 ## Marginal distributions 
 

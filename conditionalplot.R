@@ -3,6 +3,37 @@ source("season.R")
 ##################
 #¤ Simuler Data ¤# 
 ##################
+
+Data = tibble(X = data$DE, Y = data$DEForecast)
+Data %>% ggplot(aes(x = X, y = Y)) + geom_point()+xlim(-80,80)+ylim(-80,80)
+
+
+##################
+#¤Fit Marginaler¤# 
+##################
+
+F_X = ecdf(Data$X)
+F_Y = ecdf(Data$Y)
+
+##################
+#¤  Fit Copula  ¤# 
+##################
+dseq <- c(2,4,3,5)
+par(mfrow=c(1,2))
+for (i in 1:4) {
+  hist(data[,dseq[i]], prob=T, col="skyblue2",breaks=100,
+       main=paste("Density of",names(data)[dseq[i]]),xlab="")
+  lines(density(data[,dseq[i]]), type="l", col="red", lwd=2)  # type is 'ell', not 'one'
+  curve(dnorm(x, 0, sd(data[,dseq[i]])), add=T, lty="dotted")
+  #legend("topright", legend=c("edf","normal"),
+  #       col=c("red","black"), lty=c(1,2), cex=1)
+}
+
+
+
+par(mfrow=c(1,1))
+
+
 C_hat = function(w){
   pCopula(w, fitted@copula)
 }
