@@ -22,7 +22,8 @@ F_Y = ecdf(Data$Y)
 dseq <- c(2,4,3,5)
 par(mfrow=c(1,2))
 for (i in 1:4) {
-hist(data[,dseq[i]], prob=T, col="skyblue2",breaks=100,
+hist(data[,dseq[i]], prob=T, col="skyblue2",breaks=1000,
+     xlim = c(-100,100),
      main=paste("Density of",names(data)[dseq[i]]),xlab="")
 lines(density(data[,dseq[i]]), type="l", col="red", lwd=2)  # type is 'ell', not 'one'
 curve(dnorm(x, 0, sd(data[,dseq[i]])), add=T, lty="dotted")
@@ -42,7 +43,7 @@ fitted = fitCopula(tCopula(),U, method="itau",start=NULL)
 
 hist(cCopula(as.matrix(U),fitted@copula))
 
-x_seq = seq(from = -20, to = 20, length.out = 1000)
+x_seq = seq(from = -20, to = 20, length.out = 100)
 
 C_hat = function(w){
   pCopula(w, fitted@copula)
@@ -60,15 +61,15 @@ C_hat = function(w){
   
   sapply(X = F_X(x), dCdV)
 }
-# y=c(-20,-15,-10,-5,0,5,10,15,20)*3
-# y=seq(from = -20, to = 20, length.out = 1000)
-# cdfm <- c()
-# for (i in 1:length(y)) {
-#   cdfm = cbind(cdfm,`F_X|Y`(x_seq,y[i],F_X,F_Y,C_hat))
-# }
-# 
-# 
-# persp3D(x=y,y=c(1:1000),z=t(cdfm))
+y=c(-20,-15,-10,-5,0,5,10,15,20)*3
+y=seq(from = -20, to = 20, length.out = 10)
+cdfm <- c()
+for (i in 1:length(y)) {
+  cdfm = cbind(cdfm,`F_X|Y`(x_seq,y[i],F_X,F_Y,C_hat))
+}
+
+
+persp3D(x=y,y=c(1:100),z=t(cdfm))
 
 y = 0
 `P(X<=x|Y=y)` = `F_X|Y`(x_seq,y,F_X,F_Y,C_hat)

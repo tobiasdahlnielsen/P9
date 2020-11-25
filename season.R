@@ -1,13 +1,19 @@
 ## Load packages
 source("Lib.R")
-load("~/P9/armagarchparm.RData")
-#load("~/P9/5arga.RData")
+load("~/Rstudio Git/P9/armagarchparm.RData")
+load("~/Rstudio Git/P9/5arga.RData")
 ## Load data
 spot_data <- as.data.frame(read_csv("spot_data.csv"))
 spot_data <- spot_data %>% mutate(StartUTC = as.POSIXct(StartUTC, tz = "UTC", format = "%Y-%m-%d %H:%M"))
 
 ## remove seasonality
-{data <- spot_data[,1]
+
+
+
+{
+dd <- seasonaldummy(ts(spot_data$DE,frequency = 24))
+
+data <- spot_data[,1]
 datafit <- spot_data[,1]
 periode <- 365*24
 for (i in 1:4) {
@@ -31,11 +37,12 @@ for (i in 1:4) {
                  cos(((52*2)*pi/periode)*I(time(spot_data[,1])))+
                  sin(((52*2)*pi/periode)*I(time(spot_data[,1])))+
                  cos(((365*2)*pi/periode)*I(time(spot_data[,1])))+
-                 sin(((365*2)*pi/periode)*I(time(spot_data[,1])))
+                 sin(((365*2)*pi/periode)*I(time(spot_data[,1])))+
+                 cos(((2*365*2)*pi/periode)*I(time(spot_data[,1])))+
+                 sin(((2*365*2)*pi/periode)*I(time(spot_data[,1])))+
+                 dd
   )
- #print( summary(model))
  
-#plot(model$residuals,type="l")
 #ARMAtest <- auto.arima(model$residuals)
 spec <- ugarchspec(variance.model = list(model = "sGARCH",
                                          garchOrder = bp[[i]][3:4],
@@ -50,17 +57,16 @@ spec <- ugarchspec(variance.model = list(model = "sGARCH",
                                          fixed.pars = list()))
 
 garch <- ugarchfit(spec = spec, data = model$residuals,solver = "hybrid", solver.control = list(trace=0))
-#sarma <- arima(ARMAtest$residuals,seasonal = list(order=c(1,0,0),period=24))
-#print(summary(ARMAtest))
-#acf(sarma$residuals)
-#Acf(ARMAtest$residuals)
+sarma <- arima(garch@fit$residuals,seasonal = list(order=c(5,0,0),period=24))
+
+
 data <- cbind(data,garch@fit$residuals)
-datafit <- cbind(datafit,garch@fit$fitted.values)
+#datafit <- cbind(datafit,garch@fit$fitted.values)
 }
 data <- as.data.frame(data);names(data) <- c(names(spot_data))[1:(i+1)]
 datafit <- as.data.frame(datafit);names(datafit) <- c(names(spot_data))[1:(i+1)]
 
-#auto.arima(model$residuals)
+
 }
 
 # parm <- permutations(5,4,repeats.allowed = T)

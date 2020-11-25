@@ -44,8 +44,10 @@ lambda <- c(lower = fitLambda(pseudoobsDE)[2,1],
 F_X = ecdf(data$DE)
 F_Y = ecdf(data$FR)
 
-lambdaDE <- c(lower = fitLambda(cbind(F_X(data$DE),F_XF(data$DEForecast)))[2,1],
+lambdaDE <- c(lower = fitLambdas(cbind(F_X(data$DE),F_XF(data$DEForecast)))[2,1],
             upper = fitLambda(cbind(F_X(data$DE),F_XF(data$DEForecast)),lower.tail = FALSE)[2,1])
+
+cor(cbind(F_X(data$DE),F_XF(data$DEForecast)), method = "kendall")
 
 
 F_XF = ecdf(data$DEForecast)
