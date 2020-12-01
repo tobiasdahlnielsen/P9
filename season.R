@@ -6,6 +6,16 @@ load("~/Rstudio Git/P9/5arga.RData")
 spot_data <- as.data.frame(read_csv("spot_data.csv"))
 spot_data <- spot_data %>% mutate(StartUTC = as.POSIXct(StartUTC, tz = "UTC", format = "%Y-%m-%d %H:%M"))
 
+
+for (i in 1:4) {
+  med <- median(spot_data[,i+1])
+  mea <- mean(spot_data[,i+1])
+  out.in <- which(spot_data[,i+1]>(med+10*mea))
+  if (!(length(out.in)==0)) {
+      spot_data[,(i+1)] <- medianswap(spot_data[,(i+1)],out.in)
+  }
+}
+
 ## remove seasonality
 
 
